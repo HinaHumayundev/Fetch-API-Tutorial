@@ -1,5 +1,5 @@
 import './App.css';
-import SearchComponent from '../MainPage/index.jsx'
+import SearchComponent from '../MainPage'
 
 function App() {
   return <SearchComponent />;

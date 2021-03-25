@@ -93,8 +93,16 @@ export default function ArtistEvents({ artistEvents }) {
       <Grid container spacing={4}>
         {artistEvents.map((card) => (
           <Grid item key={card.id} xs={12} sm={6} md={4}>
-            <Card style={{background: 'linear-gradient(45deg, #29b6f6 30%, #f50057 90%)'}}className={classes.card}>
-              <CardContent style={{color: 'white'}} className={classes.cardContent}>
+            <Card
+              style={{
+                background: "linear-gradient(45deg, #29b6f6 30%, #f50057 90%)",
+              }}
+              className={classes.card}
+            >
+              <CardContent
+                style={{ color: "white" }}
+                className={classes.cardContent}
+              >
                 <Typography gutterBottom variant="h6" component="h6">
                   EVENT DETAILS
                 </Typography>

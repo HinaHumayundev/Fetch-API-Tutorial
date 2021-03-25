@@ -11,11 +11,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
-import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
 import SearchIcon from "@material-ui/icons/Search";
 import Avatar from "@material-ui/core/Avatar";
-import ArtistEvents from "../ArtistEvents/index";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+
+import ArtistEvents from "../ArtistEvents";
+import { SignalCellularNull } from "@material-ui/icons";
 
 function Copyright() {
   return (
@@ -30,6 +33,7 @@ function Copyright() {
   );
 }
 
+//Using styling from Material/UI framework
 const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: theme.spacing(2),
@@ -38,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     background: "linear-gradient(45deg, #29b6f6 30%, #f50057 90%)",
     border: 0,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    
+
     padding: theme.spacing(8, 0, 6),
   },
   heroButtons: {
@@ -55,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   cardMedia: {
-    paddingTop: "56.25%", // 16:9
+    paddingTop: "56.25%",
   },
   cardContent: {
     flexGrow: 1,
@@ -98,12 +102,21 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
     fontStyle: "italic",
   },
+
+  autocomplete: {
+    width: "100%",
+  },
 }));
 
+/*
+SearchComponent is a functional component which fetches the artist name, profile picture, and facebook url
+from the webapi using hooks i.e useState to persiste the state.  It then uses event click to fetch the data from webapi
+
+*/
 export default function SearchComponent() {
   const classes = useStyles();
 
-  const [state, setState] = useState(null);
+  const [state, setState] = useState("");
   const [artistEvents, setArtistEvents] = useState(null);
   const [searchField, setSearchField] = useState("");
 
@@ -113,6 +126,12 @@ export default function SearchComponent() {
 
   const handleClick = async (e) => {
     e.preventDefault();
+    //Persisting the last entered artist and events in a local storage.
+    let searchData = JSON.parse(localStorage.getItem("mylist"));
+    if (!searchData?.includes(searchField))
+      searchData = `${searchData},${searchField}`;
+    if (searchData.includes(null)) searchData = searchData.slice(5);
+    localStorage.setItem("mylist", JSON.stringify(searchData));
     if (searchField === "") return null;
     const response = await fetch(
       `https://rest.bandsintown.com/artists/${encodeURI(
@@ -145,7 +164,7 @@ export default function SearchComponent() {
             style={{ background: "#0d47a1" }}
             className={classes.icon}
           />
-          <Typography variant="h6"   className="heading" noWrap>
+          <Typography variant="h6" className="heading" noWrap>
             WEB DEVELOPMENT TASK
           </Typography>
         </Toolbar>
@@ -166,13 +185,27 @@ export default function SearchComponent() {
                 Find the Artist
               </Typography>
               <Paper component="form" className={classes.root}>
-                <InputBase
-                  className={classes.input}
-                  placeholder="Search artist"
-                  inputProps={{ "aria-label": "search an artist" }}
-                  onChange={(e) => {
-                    handleOnchange(e);
-                  }}
+                <Autocomplete
+                  className={classes.autocomplete}
+                  freeSolo
+                  options={
+                    JSON.parse(localStorage.getItem("mylist"))
+                      ? JSON.parse(localStorage.getItem("mylist")).split(",")
+                      : []
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      className={classes.input}
+                      placeholder="Search artist"
+                      inputProps={{ "aria-label": "search an artist" }}
+                      onChange={(e) => {
+                        handleOnchange(e);
+                      }}
+                      {...params}
+                      margin="normal"
+                      variant="outlined"
+                    />
+                  )}
                 />
                 <IconButton
                   type="submit"
@@ -239,7 +272,7 @@ export default function SearchComponent() {
         <Typography
           variant="subtitle1"
           align="center"
-          fontStyle= "italic"
+          fontStyle="italic"
           color="textSecondary"
           component="p"
         >
