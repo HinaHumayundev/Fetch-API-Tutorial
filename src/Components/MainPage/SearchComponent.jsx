@@ -16,11 +16,10 @@ import SearchIcon from "@material-ui/icons/Search";
 import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ArtistEvents from "../ArtistEvents";
-import { SignalCellularNull } from "@material-ui/icons";
 
-function Copyright() {
+function Footer() {
   return (
     <Typography variant="body2" color="white" align="center">
       {"DATE: "}
@@ -106,6 +105,10 @@ const useStyles = makeStyles((theme) => ({
   autocomplete: {
     width: "100%",
   },
+
+  loader:{
+    textAlign: "center",
+  },
 }));
 
 /*
@@ -119,6 +122,7 @@ export default function SearchComponent() {
   const [state, setState] = useState("");
   const [artistEvents, setArtistEvents] = useState(null);
   const [searchField, setSearchField] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleOnchange = async (e) => {
     setSearchField(e.target.value);
@@ -133,12 +137,14 @@ export default function SearchComponent() {
     if (searchData.includes(null)) searchData = searchData.slice(5);
     localStorage.setItem("mylist", JSON.stringify(searchData));
     if (searchField === "") return null;
+    setLoading(true);
     const response = await fetch(
       `https://rest.bandsintown.com/artists/${encodeURI(
         searchField
       )}?app_id=test`
     );
     const data = await response.json();
+    setLoading(false);
     setState(data);
     setArtistEvents(null);
   };
@@ -173,7 +179,7 @@ export default function SearchComponent() {
         {/* Hero unit */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
-            <div className="center-align">
+            <div>
               <Typography
                 component="h1"
                 variant="h2"
@@ -221,6 +227,9 @@ export default function SearchComponent() {
             </div>
           </Container>
         </div>
+        {loading && <div className={classes.loader}>
+          <CircularProgress />
+        </div> }
         {state && (
           <Container
             className={classes.cardGrid}
@@ -278,7 +287,7 @@ export default function SearchComponent() {
         >
           Hina Humayun
         </Typography>
-        <Copyright />
+        <Footer />
       </footer>
       {/* End footer */}
     </React.Fragment>
